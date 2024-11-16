@@ -8,39 +8,88 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
     body {
-      background-color: #f8f9fa;
+      background: #121212;
+      color: #e0e0e0;
+      font-family: 'Arial', sans-serif;
+    }
+    .header {
+      background: #1f1f1f;
+      color: #ffffff;
+      padding: 40px 20px;
+      text-align: center;
+      border-radius: 10px;
+      margin-bottom: 30px;
     }
     img {
       max-width: 150px;
       max-height: 100px;
       object-fit: cover;
-      border-radius: 5px;
-      border: 1px solid #ddd;
+      border-radius: 10px;
+      border: 2px solid #333;
+      cursor: pointer;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
-    .edit-mode input {
-      border: 1px solid #ced4da;
+    img:hover {
+      transform: scale(1.1);
+      box-shadow: 0 4px 8px rgba(255, 255, 255, 0.3);
     }
-    .btn-upload {
-      margin-top: 5px;
+    .table {
+      background: #1f1f1f;
+      color: #ffffff;
+      text-align: center;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    .table th {
+      background-color: #333;
+      color: #ffffff;
+    }
+    .table td {
+      background: #ffffff;
+    }
+    .table-hover tbody tr:hover {
+      background-color: #2a2a2a;
+    }
+    .featured-image-container {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    .featured-image {
+      max-width: 100%;
+      max-height: 400px;
+      object-fit: contain;
+      border-radius: 10px;
+      border: 3px solid #333;
+      box-shadow: 0 4px 8px rgba(255, 255, 255, 0.2);
+    }
+    .modal img {
+      width: 90%;
+      height: auto;
+      max-height: 80vh;
+      display: block;
+      margin: auto;
+    }
+    .modal-title {
+      color: #141313;
     }
   </style>
 </head>
 <body>
-  <div class="container my-5">
-    <!-- Header -->
-    <header class="text-center mb-4">
-      <h1 class="text-primary">Electric Car Comparison</h1>
-      <p class="text-muted">Explore and compare electric cars in Thailand with ease</p>
-    </header>
+  <!-- Header -->
+  <div class="header">
+    <h1>Electric Car Comparison</h1>
+    <p>Explore and compare the best electric cars in Thailand</p>
+  </div>
 
-    <!-- Search Bar -->
-    <div class="mb-3">
-      <input type="text" id="search" class="form-control" placeholder="Search by model or price..." oninput="filterTable()">
-    </div>
+  <!-- Featured Image Section -->
+  <div class="featured-image-container">
+    <img src="images/car1.jpg" alt="Featured Car" class="featured-image" id="featuredImage">
+  </div>
 
+  <div class="container">
     <!-- Table -->
     <table class="table table-hover table-bordered" id="carTable">
-      <thead class="table-dark">
+      <thead>
         <tr>
           <th>Image</th>
           <th>Model</th>
@@ -49,135 +98,100 @@
           <th>Range (km)</th>
           <th>Battery (kWh)</th>
           <th>Monthly Payment (THB)</th>
-          <th>Actions</th>
         </tr>
       </thead>
       <tbody>
-        <tr>
-          <td>
-            <img src="car1.jpg" alt="Changan Deepal S05">
-            <input type="file" class="form-control btn-upload d-none" onchange="updateImage(this, 0)">
-          </td>
-          <td data-label="Model">Changan Deepal S05</td>
-          <td data-label="Price">599,000</td>
-          <td data-label="Down Payment">100,000</td>
-          <td data-label="Range">350</td>
-          <td data-label="Battery">40</td>
-          <td class="monthly-payment" data-label="Monthly Payment">11,980</td>
-          <td>
-            <button class="btn btn-sm btn-primary" onclick="editRow(this)">Edit</button>
-            <button class="btn btn-sm btn-success d-none" onclick="saveRow(this)">Save</button>
-            <button class="btn btn-sm btn-secondary" onclick="toggleImageUpload(this)">Change Image</button>
-          </td>
+        <tr draggable="true">
+          <td><img src="images/car1.jpg" alt="Car 1" onclick="changeFeaturedImage(this)"></td>
+          <td>Changan Deepal S05</td>
+          <td>-</td>
+          <td>-</td>
+          <td>350</td>
+          <td>40</td>
+          <td>-</td>
         </tr>
-        <tr>
-          <td>
-            <img src="car2.jpg" alt="MG ZS EV">
-            <input type="file" class="form-control btn-upload d-none" onchange="updateImage(this, 1)">
-          </td>
-          <td data-label="Model">MG ZS EV</td>
-          <td data-label="Price">1,190,000</td>
-          <td data-label="Down Payment">200,000</td>
-          <td data-label="Range">450</td>
-          <td data-label="Battery">50</td>
-          <td class="monthly-payment" data-label="Monthly Payment">23,800</td>
-          <td>
-            <button class="btn btn-sm btn-primary" onclick="editRow(this)">Edit</button>
-            <button class="btn btn-sm btn-success d-none" onclick="saveRow(this)">Save</button>
-            <button class="btn btn-sm btn-secondary" onclick="toggleImageUpload(this)">Change Image</button>
-          </td>
+        <tr draggable="true">
+          <td><img src="images/car2.jpg" alt="Car 2" onclick="changeFeaturedImage(this)"></td>
+          <td>Ora goodcat</td>
+          <td>590,000</td>
+          <td>111,000</td>
+          <td>450</td>
+          <td>50</td>
+          <td>8,900</td>
+        </tr>
+        <tr draggable="true">
+          <td><img src="images/car3.jpg" alt="Car 3" onclick="changeFeaturedImage(this)"></td>
+          <td>Tesla Model 3</td>
+          <td>1,990,000</td>
+          <td>300,000</td>
+          <td>500</td>
+          <td>75</td>
+          <td>39,800</td>
         </tr>
       </tbody>
     </table>
   </div>
 
+  <!-- Modal -->
+  <div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Car Gallery</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="d-flex justify-content-center">
+            <img src="" alt="Expanded Image" id="expandedImage">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Include Bootstrap JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
   <script>
-    // ฟังก์ชันค้นหา
-    function filterTable() {
-      const input = document.getElementById('search').value.toLowerCase();
-      const rows = document.querySelectorAll('#carTable tbody tr');
-      rows.forEach(row => {
-        const cells = row.querySelectorAll('td:not(:first-child):not(:last-child)');
-        const rowText = Array.from(cells).map(cell => cell.textContent.toLowerCase()).join(' ');
-        row.style.display = rowText.includes(input) ? '' : 'none';
-      });
+    // Change Featured Image
+    function changeFeaturedImage(imgElement) {
+      const featuredImage = document.getElementById('featuredImage');
+      featuredImage.src = imgElement.src;
     }
 
-    // ฟังก์ชันแก้ไขข้อมูล
-    function editRow(button) {
-      const row = button.closest('tr');
-      row.classList.add('edit-mode');
-      const cells = row.querySelectorAll('td[data-label]');
-      cells.forEach(cell => {
-        const text = cell.textContent.trim();
-        cell.innerHTML = `<input type="text" class="form-control" value="${text}">`;
-      });
-      button.classList.add('d-none'); // ซ่อนปุ่ม Edit
-      button.nextElementSibling.classList.remove('d-none'); // แสดงปุ่ม Save
+    // Show Modal with Gallery
+    function showModal(imgElement) {
+      const expandedImage = document.getElementById('expandedImage');
+      expandedImage.src = imgElement.src;
+      const imageModal = new bootstrap.Modal(document.getElementById('imageModal'));
+      imageModal.show();
     }
 
-    // ฟังก์ชันบันทึกข้อมูล
-    function saveRow(button) {
-      const row = button.closest('tr');
-      row.classList.remove('edit-mode');
-      const cells = row.querySelectorAll('td[data-label]');
-      cells.forEach(cell => {
-        const input = cell.querySelector('input');
-        if (input) {
-          cell.textContent = input.value.trim();
+    // Drag and Drop for Table Rows
+    const tableBody = document.querySelector("#carTable tbody");
+    let draggingRow;
+
+    tableBody.addEventListener("dragstart", (e) => {
+      draggingRow = e.target;
+      e.target.style.opacity = 0.5;
+    });
+
+    tableBody.addEventListener("dragend", (e) => {
+      e.target.style.opacity = "";
+    });
+
+    tableBody.addEventListener("dragover", (e) => {
+      e.preventDefault();
+      const targetRow = e.target.closest("tr");
+      if (targetRow && targetRow !== draggingRow) {
+        const bounding = targetRow.getBoundingClientRect();
+        const offset = e.clientY - bounding.top;
+        if (offset > bounding.height / 2) {
+          targetRow.after(draggingRow);
+        } else {
+          targetRow.before(draggingRow);
         }
-      });
-      button.classList.add('d-none'); // ซ่อนปุ่ม Save
-      button.previousElementSibling.classList.remove('d-none'); // แสดงปุ่ม Edit
-      updateMonthlyPayment(row);
-    }
-
-    // ฟังก์ชันคำนวณยอดผ่อน
-    function updateMonthlyPayment(row) {
-      const priceCell = row.querySelector('td[data-label="Price"]');
-      const downPaymentCell = row.querySelector('td[data-label="Down Payment"]');
-      const paymentCell = row.querySelector('.monthly-payment');
-
-      if (priceCell && downPaymentCell && paymentCell) {
-        const price = parseFloat(priceCell.textContent.replace(/,/g, '')) || 0;
-        const downPayment = parseFloat(downPaymentCell.textContent.replace(/,/g, '')) || 0;
-        const loanAmount = price - downPayment;
-        const monthlyPayment = calculateMonthlyPayment(loanAmount);
-        paymentCell.textContent = monthlyPayment.toLocaleString();
       }
-    }
-
-    // คำนวณยอดผ่อน (ดอกเบี้ย 2% ต่อปี ผ่อน 5 ปี)
-    function calculateMonthlyPayment(amount) {
-      const interestRate = 0.02;
-      const termYears = 5;
-      const totalAmount = amount * (1 + interestRate * termYears);
-      const monthlyPayment = totalAmount / (termYears * 12);
-      return Math.round(monthlyPayment);
-    }
-
-    // ฟังก์ชันอัปเดตรูปภาพ
-    function updateImage(input, rowIndex) {
-      const file = input.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-          const imageCell = document.querySelectorAll('#carTable tbody tr')[rowIndex].querySelector('img');
-          imageCell.src = e.target.result;
-        };
-        reader.readAsDataURL(file);
-      }
-      input.classList.add('d-none');
-    }
-
-    // ฟังก์ชันเปิด/ปิดการอัปโหลดรูปภาพ
-    function toggleImageUpload(button) {
-      const row = button.closest('tr');
-      const fileInput = row.querySelector('.btn-upload');
-      fileInput.classList.toggle('d-none');
-    }
+    });
   </script>
 </body>
 </html>
