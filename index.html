@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Electric Car Comparison</title>
+  <!-- Include Bootstrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      background-color: #f8f9fa;
+    }
+    img {
+      max-width: 150px;
+      max-height: 100px;
+      object-fit: cover;
+      border-radius: 5px;
+      border: 1px solid #ddd;
+    }
+    .edit-mode input {
+      border: 1px solid #ced4da;
+    }
+    .btn-upload {
+      margin-top: 5px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container my-5">
+    <!-- Header -->
+    <header class="text-center mb-4">
+      <h1 class="text-primary">Electric Car Comparison</h1>
+      <p class="text-muted">Explore and compare electric cars in Thailand with ease</p>
+    </header>
+
+    <!-- Search Bar -->
+    <div class="mb-3">
+      <input type="text" id="search" class="form-control" placeholder="Search by model or price..." oninput="filterTable()">
+    </div>
+
+    <!-- Table -->
+    <table class="table table-hover table-bordered" id="carTable">
+      <thead class="table-dark">
+        <tr>
+          <th>Image</th>
+          <th>Model</th>
+          <th>Price (THB)</th>
+          <th>Down Payment (THB)</th>
+          <th>Range (km)</th>
+          <th>Battery (kWh)</th>
+          <th>Monthly Payment (THB)</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>
+            <img src="car1.jpg" alt="Changan Deepal S05">
+            <input type="file" class="form-control btn-upload d-none" onchange="updateImage(this, 0)">
+          </td>
+          <td data-label="Model">Changan Deepal S05</td>
+          <td data-label="Price">599,000</td>
+          <td data-label="Down Payment">100,000</td>
+          <td data-label="Range">350</td>
+          <td data-label="Battery">40</td>
+          <td class="monthly-payment" data-label="Monthly Payment">11,980</td>
+          <td>
+            <button class="btn btn-sm btn-primary" onclick="editRow(this)">Edit</button>
+            <button class="btn btn-sm btn-success d-none" onclick="saveRow(this)">Save</button>
+            <button class="btn btn-sm btn-secondary" onclick="toggleImageUpload(this)">Change Image</button>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <img src="car2.jpg" alt="MG ZS EV">
+            <input type="file" class="form-control btn-upload d-none" onchange="updateImage(this, 1)">
+          </td>
+          <td data-label="Model">MG ZS EV</td>
+          <td data-label="Price">1,190,000</td>
+          <td data-label="Down Payment">200,000</td>
+          <td data-label="Range">450</td>
+          <td data-label="Battery">50</td>
+          <td class="monthly-payment" data-label="Monthly Payment">23,800</td>
+          <td>
+            <button class="btn btn-sm btn-primary" onclick="editRow(this)">Edit</button>
+            <button class="btn btn-sm btn-success d-none" onclick="saveRow(this)">Save</button>
+            <button class="btn btn-sm btn-secondary" onclick="toggleImageUpload(this)">Change Image</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Include Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // ฟังก์ชันค้นหา
+    function filterTable() {
+      const input = document.getElementById('search').value.toLowerCase();
+      const rows = document.querySelectorAll('#carTable tbody tr');
+      rows.forEach(row => {
+        const cells = row.querySelectorAll('td:not(:first-child):not(:last-child)');
+        const rowText = Array.from(cells).map(cell => cell.textContent.toLowerCase()).join(' ');
+        row.style.display = rowText.includes(input) ? '' : 'none';
+      });
+    }
+
+    // ฟังก์ชันแก้ไขข้อมูล
+    function editRow(button) {
+      const row = button.closest('tr');
+      row.classList.add('edit-mode');
+      const cells = row.querySelectorAll('td[data-label]');
+      cells.forEach(cell => {
+        const text = cell.textContent.trim();
+        cell.innerHTML = `<input type="text" class="form-control" value="${text}">`;
+      });
+      button.classList.add('d-none'); // ซ่อนปุ่ม Edit
+      button.nextElementSibling.classList.remove('d-none'); // แสดงปุ่ม Save
+    }
+
+    // ฟังก์ชันบันทึกข้อมูล
+    function saveRow(button) {
+      const row = button.closest('tr');
+      row.classList.remove('edit-mode');
+      const cells = row.querySelectorAll('td[data-label]');
+      cells.forEach(cell => {
+        const input = cell.querySelector('input');
+        if (input) {
+          cell.textContent = input.value.trim();
+        }
+      });
+      button.classList.add('d-none'); // ซ่อนปุ่ม Save
+      button.previousElementSibling.classList.remove('d-none'); // แสดงปุ่ม Edit
+      updateMonthlyPayment(row);
+    }
+
+    // ฟังก์ชันคำนวณยอดผ่อน
+    function updateMonthlyPayment(row) {
+      const priceCell = row.querySelector('td[data-label="Price"]');
+      const downPaymentCell = row.querySelector('td[data-label="Down Payment"]');
+      const paymentCell = row.querySelector('.monthly-payment');
+
+      if (priceCell && downPaymentCell && paymentCell) {
+        const price = parseFloat(priceCell.textContent.replace(/,/g, '')) || 0;
+        const downPayment = parseFloat(downPaymentCell.textContent.replace(/,/g, '')) || 0;
+        const loanAmount = price - downPayment;
+        const monthlyPayment = calculateMonthlyPayment(loanAmount);
+        paymentCell.textContent = monthlyPayment.toLocaleString();
+      }
+    }
+
+    // คำนวณยอดผ่อน (ดอกเบี้ย 2% ต่อปี ผ่อน 5 ปี)
+    function calculateMonthlyPayment(amount) {
+      const interestRate = 0.02;
+      const termYears = 5;
+      const totalAmount = amount * (1 + interestRate * termYears);
+      const monthlyPayment = totalAmount / (termYears * 12);
+      return Math.round(monthlyPayment);
+    }
+
+    // ฟังก์ชันอัปเดตรูปภาพ
+    function updateImage(input, rowIndex) {
+      const file = input.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          const imageCell = document.querySelectorAll('#carTable tbody tr')[rowIndex].querySelector('img');
+          imageCell.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+      }
+      input.classList.add('d-none');
+    }
+
+    // ฟังก์ชันเปิด/ปิดการอัปโหลดรูปภาพ
+    function toggleImageUpload(button) {
+      const row = button.closest('tr');
+      const fileInput = row.querySelector('.btn-upload');
+      fileInput.classList.toggle('d-none');
+    }
+  </script>
+</body>
+</html>
